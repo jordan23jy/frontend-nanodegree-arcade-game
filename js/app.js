@@ -10,8 +10,8 @@ function randomNum(a, b) {
 var
     enemyPositionX = 1, // Enemy starting position
     enemyPositionY = 65 + 83,
-
-    maxNumBugs = 5, // Maximum number of bugs
+    enemySpeed = [50, 150, 300],
+    maxNumBugs = 3, // Maximum number of bugs
     allEnemies = []; // Store enemies in an array
 
 // Enemies our player must avoid
@@ -24,7 +24,8 @@ var Enemy = function(x, y, speed) {
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
     this.y = y;
-    this.speed = speed;
+    this.speed = randomNum(200, 100);
+
 };
 
 // Update the enemy's position, required method for game
@@ -34,25 +35,42 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += this.speed * dt;
-    if(this.x > 820) {
-        this.x = 0;
-    }
 
+    if(this.x > 820) {
+        this.x = 0; // Reset enemy position
+
+        // Random starting position after end of image [REPEATED CODE!!]
+        var randomRowNum = randomNum(3, 1);
+        // Enemy position on rock tile
+        if (randomRowNum === 1) this.y = 65;
+        if (randomRowNum === 2) this.y = 65 + 83;
+        if (randomRowNum === 3) this.y = 65 + 83 * 2;
+
+    }
 };
 
+
+
+// Generate random number between tiles
 function initiateObject() {
-    // Generate random number between tiles
+
+    for(i = 0; i < maxNumBugs; i++) {
+
+    // Random starting position [REPEATED CODE!!]
     var randomRowNum = randomNum(3, 1);
     // Enemy position on rock tile
-    if (randomRowNum === 1) y = 65;
-    if (randomRowNum === 2) y = 65 + 83;
-    if (randomRowNum === 3) y = 65 + 83 * 2;
-    var enemySpeed = randomNum(200, 100);
-    var enemy = new Enemy(0, y, enemySpeed);
+    if (randomRowNum === 1) this.y = 65;
+    if (randomRowNum === 2) this.y = 65 + 83;
+    if (randomRowNum === 3) this.y = 65 + 83 * 2;
+
+
+    var enemy = new Enemy(-200, this.y, Enemy.speed);
     allEnemies.push(enemy);
+    }
 }
 
 initiateObject();
+
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
