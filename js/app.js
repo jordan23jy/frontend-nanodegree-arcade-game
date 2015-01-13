@@ -101,8 +101,8 @@ var playerMoveX = 101,
     playerHeight = 80,
     blockHeight = 83,
     blockWidth = 101,
-    maxLife = 5;
-    allLife = [];
+    maxLife = 1;
+
 
 // Now instantiate your objects.
 /*function initiateEnemy() {
@@ -159,7 +159,8 @@ var player = new Player(playerInitialPosX, playerInitialPosY);
 // Players life before game over
 var Life = function() {
     this.sprite = 'images/Heart.png';
-    this.life = 5;
+    this.gameover = 'images/game-over.png';
+    this.life = maxLife;
 
 };
 
@@ -169,12 +170,16 @@ Life.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), x, 610, 40, 70);
     x += 50;
 }
+    if(this.life === 0) {
+        ctx.drawImage(Resources.get(this.gameover),0, 50);
+    }
 };
 
 Life.prototype.update = function() {
     if(this.life > 0) {
         this.life -= 1;
     }
+
 };
 
 var playerLife = new Life();
