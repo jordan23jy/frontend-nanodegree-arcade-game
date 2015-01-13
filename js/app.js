@@ -1,22 +1,11 @@
-// Store all enemies in array
 
 
-// Generate random numbers
-function randomNum(a, b) {
-    return Math.floor(Math.random() * a + b);
-}
-
-// Object size
-var playerWidth = 75,
-    playerHeight = 80,
-    enemyWidth = 101,
-    enemyHeight = 70;
-
-
+/*********** ENEMY ***********/
 //Enemy Variables
-var
-    enemyPositionX = 1, // Enemy starting position
+var enemyPositionX = 1, // Enemy starting position
     enemyPositionY = 65 + 83,
+    enemyWidth = 101,
+    enemyHeight = 70,
     enemySpeed = [50, 150, 300],
     maxNumBugs = 3, // Maximum number of bugs
     allEnemies = []; // Store enemies in an array
@@ -32,7 +21,6 @@ var Enemy = function(x, y, speed) {
     this.x = x;
     this.y = y;
     this.speed = randomNum(200, 100);
-
 };
 
 // Update the enemy's position, required method for game
@@ -43,8 +31,9 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x += this.speed * dt;
 
+    // Reset enemy position once over canvas
     if(this.x > 820) {
-        this.x = 0; // Reset enemy position
+        this.x = 0;
 
         // Random starting position after end of image [REPEATED CODE!!]
         var randomRowNum = randomNum(3, 1);
@@ -53,14 +42,6 @@ Enemy.prototype.update = function(dt) {
         if (randomRowNum === 2) this.y = 65 + 83;
         if (randomRowNum === 3) this.y = 65 + 83 * 2;
     }
-
-    // Player boundaries for detecting collision
-    players = {
-        'x': player.x,
-        'y': player.y,
-        'w': playerWidth,
-        'h': playerHeight
-    };
 
     // Enemy boundaries for detecing collision
     for(i = 0; i < allEnemies.length; i++) {
@@ -72,8 +53,8 @@ Enemy.prototype.update = function(dt) {
        };
 
        // Collision detection
-       if(enemies.x < players.x + players.w && enemies.x + enemies.w > players.x &&
-       enemies.y < players.y + players.h && enemies.y + enemies.h > players.y){
+       if(enemies.x < player.x + player.w && enemies.x + enemies.w > player.x &&
+       enemies.y < player.y + player.h && enemies.y + enemies.h > player.y){
        console.log("BANG!!!");
        collide();
        }
@@ -81,10 +62,8 @@ Enemy.prototype.update = function(dt) {
 };
 
 
-
-// Initiate enemies{}
-function initiateObject() {
-
+// Initiate enemies
+function initiateEnemy() {
     for(i = 0; i < maxNumBugs; i++) {
 
     // Random starting position [REPEATED CODE!!]
@@ -101,19 +80,31 @@ function initiateObject() {
     }
 }
 
-initiateObject();
+initiateEnemy();
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+/*********** PLAYER ***********/
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 
+// Player Variables
+var playerMoveX = 101,
+    playerMoveY = 83,
+    playerInitialPosX = 200,
+    playerInitialPosY = 400,
+    playerWidth = 75,
+    playerHeight = 80,
+    blockHeight = 83,
+    blockWidth = 101,
+    maxLife = 5;
+    allLife = [];
 
-// No8w instantiate your objects.
+// Now instantiate your objects.
 /*function initiateEnemy() {
 var enemy1 = new Enemy(0, 50, 1);
 };
@@ -124,24 +115,17 @@ var Player = function(x, y) {
     this.sprite = 'images/char-boy.png';
     this.x = x;
     this.y = y;
+    this.w = playerWidth;
+    this.h = playerHeight;
+
 };
-
-// Player Variables
-var playerMoveX = 101,
-    playerMoveY = 83,
-    playerInitialPosX = 200,
-    playerInitialPosY = 400,
-    blockHeight = 83,
-    blockWidth = 101,
-    maxLife = 5;
-
 
 // Update player's position
 // Parameter: dt, a time delta between two ticks for smooth animation
 Player.prototype.update = function() {
     if(this.key === 'up') {
         this.y -= playerMoveY;
-    } else if (this.key === 'down' && this.y < 400) {
+    } else if (this.key === 'down' && this.y < 483) {
         this.y += playerMoveY;
     } else if (this.key === 'left' && this.x > 0) {
         this.x  -= playerMoveX;
@@ -157,37 +141,57 @@ Player.prototype.update = function() {
 
 };
 
-// Draw player
-Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-// Call objects
-var player = new Player(playerInitialPosX, playerInitialPosY);
-
-
 /* Update players position
 */
 Player.prototype.handleInput = function(key) {
     this.key = key;
 };
 
+// Draw player
+Player.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// Call player
+var player = new Player(playerInitialPosX, playerInitialPosY);
+
+
+// Players life before game over
+var Life = function() {
+    this.sprite = 'images/Heart.png';
+    this.life = 5;
+
+};
+
+Life.prototype.render = function() {
+    var x = 0;
+    for(var i = 0; i < this.life; i++){
+    ctx.drawImage(Resources.get(this.sprite), x, 610, 40, 70);
+    x += 50;
+}
+};
+
+Life.prototype.update = function() {
+    if(this.life > 0) {
+        this.life -= 1;
+    }
+};
+
+var playerLife = new Life();
+
+
+
+// Generate random numbers
+function randomNum(a, b) {
+    return Math.floor(Math.random() * a + b);
+}
+
 // Execute collision function
 function collide() {
     player.x = playerInitialPosX;
     player.y = playerInitialPosY;
+    playerLife.update();
 }
-
-var Life = function() {
-
-    this.sprite = 'images/Heart.png';
-};
-
-Life.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), 0, 650, 50, 80);
-};
-
-var playerLife = new Life();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

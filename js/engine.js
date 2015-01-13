@@ -95,6 +95,8 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+
+
     }
 
     /* This function initially draws the "game level", it will then call
@@ -114,7 +116,8 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // Row 3 of 4 of stone
                 'images/stone-block.png',   // Row 4 of 4 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/grass-block.png',   // Row 2 of 2 of grass
+
             ],
             numRows = 7,
             numCols = 9,
