@@ -6,6 +6,13 @@ function randomNum(a, b) {
     return Math.floor(Math.random() * a + b);
 }
 
+// Object size
+var playerWidth = 75,
+    playerHeight = 80,
+    enemyWidth = 101,
+    enemyHeight = 70;
+
+
 //Enemy Variables
 var
     enemyPositionX = 1, // Enemy starting position
@@ -45,23 +52,48 @@ Enemy.prototype.update = function(dt) {
         if (randomRowNum === 1) this.y = 65;
         if (randomRowNum === 2) this.y = 65 + 83;
         if (randomRowNum === 3) this.y = 65 + 83 * 2;
+    }
 
+    // Player boundaries for detecting collision
+    players = {
+        'x': player.x,
+        'y': player.y,
+        'w': playerWidth,
+        'h': playerHeight
+    };
+
+    // Enemy boundaries for detecing collision
+    for(i = 0; i < allEnemies.length; i++) {
+       enemies = {
+           'x': allEnemies[i].x,
+           'y': allEnemies[i].y,
+           'w': enemyWidth,
+           'h': enemyHeight
+       };
+
+       // Collision detection
+       if(enemies.x < players.x + players.w && enemies.x + enemies.w > players.x &&
+       enemies.y < players.y + players.h && enemies.y + enemies.h > players.y){
+       console.log("BANG!!!");
+       collide();
+       }
     }
 };
 
 
 
-// Generate random number between tiles
+// Initiate enemies{}
 function initiateObject() {
 
     for(i = 0; i < maxNumBugs; i++) {
 
     // Random starting position [REPEATED CODE!!]
-    var randomRowNum = randomNum(3, 1);
+    var randomRowNum = randomNum(4, 1);
     // Enemy position on rock tile
     if (randomRowNum === 1) this.y = 65;
     if (randomRowNum === 2) this.y = 65 + 83;
     if (randomRowNum === 3) this.y = 65 + 83 * 2;
+    if (randomRowNum === 4) this.y = 65 + 83 * 3;
 
 
     var enemy = new Enemy(-200, this.y, Enemy.speed);
@@ -100,7 +132,8 @@ var playerMoveX = 101,
     playerInitialPosX = 200,
     playerInitialPosY = 400,
     blockHeight = 83,
-    blockWidth = 101;
+    blockWidth = 101,
+    maxLife = 5;
 
 
 // Update player's position
@@ -138,6 +171,23 @@ var player = new Player(playerInitialPosX, playerInitialPosY);
 Player.prototype.handleInput = function(key) {
     this.key = key;
 };
+
+// Execute collision function
+function collide() {
+    player.x = playerInitialPosX;
+    player.y = playerInitialPosY;
+}
+
+var Life = function() {
+
+    this.sprite = 'images/Heart.png';
+};
+
+Life.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), 0, 650, 50, 80);
+};
+
+var playerLife = new Life();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
