@@ -117,6 +117,7 @@ var Player = function(x, y) {
     this.y = y;
     this.w = playerWidth;
     this.h = playerHeight;
+    this.score = 0;
 
 };
 
@@ -134,9 +135,9 @@ Player.prototype.update = function() {
     }
     this.key = null;
 
+    // Reset if player on water
     if(this.y < 60) {
-        this.y = playerInitialPosY;
-        this.x = playerInitialPosX;
+        collide();
     }
 
 };
@@ -171,7 +172,7 @@ Life.prototype.render = function() {
     x += 50;
 }
     if(this.life === 0) {
-        ctx.drawImage(Resources.get(this.gameover),0, 50);
+        ctx.drawImage(Resources.get(this.gameover),254, 303);
     }
 };
 
@@ -179,11 +180,47 @@ Life.prototype.update = function() {
     if(this.life > 0) {
         this.life -= 1;
     }
-
 };
 
 var playerLife = new Life();
 
+
+var gemMaxNum = 5,
+    allGems = [];
+    gemWidth = 70;
+    gemHeight = 50;
+    gemPositionX = 115 + randomNum(7, 0) * blockWidth;
+    gemPositionY = 101 + randomNum(4, 0) * blockHeight;
+
+/*********** SCORE ***********/
+var Gem = function() {
+    this.sprite = 'images/Gem Blue.png';
+    this.x = gemPositionX;
+    this.y = gemPositionY;
+    this.w = gemWidth;
+    this.h = gemHeight;
+};
+
+Gem.prototype.update = function() {
+    // Collision detection
+    if(gem.x < player.x + player.w && gem.x + gem.w > player.x &&
+    gem.y < player.y + player.h && gem.y + gem.h > player.y){
+        if(playerLife.life > 0){
+    this.x = 115 + randomNum(7, 0) * blockWidth;
+    this.y = 101 + randomNum(4, 0) * blockHeight;
+    player.score += 30;
+    console.log(player.score + " Points!");
+    $("#score").html('<p>Score: ' + player.score + '</p>');
+    }
+
+    }
+};
+
+Gem.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 70, 110);
+};
+
+var gem = new Gem();
 
 
 // Generate random numbers
@@ -198,6 +235,7 @@ function collide() {
     playerLife.update();
 }
 
+
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
@@ -210,4 +248,3 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
-
