@@ -2,12 +2,12 @@
 
 /*********** ENEMY ***********/
 //Enemy Variables
-var enemyPositionX = 1, // Enemy starting position
+var enemyPositionX = 0, // Enemy starting position
     enemyPositionY = 65 + 83,
     enemyWidth = 101,
     enemyHeight = 70,
     enemySpeed = [50, 150, 300],
-    maxNumBugs = 3, // Maximum number of bugs
+    maxNumBugs = 5, // Maximum number of bugs
     allEnemies = []; // Store enemies in an array
 
 // Enemies our player must avoid
@@ -101,7 +101,7 @@ var playerMoveX = 101,
     playerHeight = 80,
     blockHeight = 83,
     blockWidth = 101,
-    maxLife = 1;
+    maxLife = 5;
 
 
 // Now instantiate your objects.
@@ -138,6 +138,7 @@ Player.prototype.update = function() {
     // Reset if player on water
     if(this.y < 60) {
         collide();
+
     }
 
 };
@@ -211,6 +212,7 @@ Gem.prototype.update = function() {
     player.score += 30;
     console.log(player.score + " Points!");
     $("#score").html('<p>Score: ' + player.score + '</p>');
+
     }
 
     }
@@ -233,6 +235,9 @@ function collide() {
     player.x = playerInitialPosX;
     player.y = playerInitialPosY;
     playerLife.update();
+    var audio = document.getElementById("audio");
+    audio.play();
+
 }
 
 
