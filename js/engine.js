@@ -45,8 +45,12 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+        if(gameStart){
         update(dt);
+        }
         render();
+
+
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -67,6 +71,7 @@ var Engine = (function(global) {
         reset();
         lastTime = Date.now();
         main();
+
     }
 
     /* This function is called by main (our game loop) and itself calls all
@@ -96,6 +101,8 @@ var Engine = (function(global) {
         });
         player.update();
         gem.update();
+
+
 
     }
 
@@ -136,13 +143,17 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83); //83
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
 
+        if(gameStart) {
+            renderEntities();
 
-        renderEntities();
+        }
     }
+
+
 
     /* This function is called by the render function and is called on each game
      * tick. It's purpose is to then call the render functions you have defined
@@ -152,17 +163,21 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        // If game over do not render
+
+        if(!gameOver) {
+            player.render();
+            playerLife.render();
+            gem.render();
+        }
+
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
-        player.render();
-
-        playerLife.render();
-
-        gem.render();
-
-
+        // If game over then render
+        if(gameOver)
+            game.render();
 
     }
 
@@ -173,6 +188,7 @@ var Engine = (function(global) {
     function reset() {
         // noop
     }
+
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when

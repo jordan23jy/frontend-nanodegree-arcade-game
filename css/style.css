@@ -2,8 +2,12 @@ body {
     text-align: center;
 }
 
-#score {
+
+#gameInfo {
+	margin-top: 30px;
+}
+
+#gameInfo {
 	font-family: 'Luckiest Guy', cursive;
 	font-size: 30px;
 }
-

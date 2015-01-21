@@ -1,5 +1,3 @@
-
-
 /*********** ENEMY ***********/
 //Enemy Variables
 var enemyPositionX = 0, // Enemy starting position
@@ -7,7 +5,7 @@ var enemyPositionX = 0, // Enemy starting position
     enemyWidth = 101,
     enemyHeight = 70,
     enemySpeed = [50, 150, 300],
-    maxNumBugs = 5, // Maximum number of bugs
+    maxNumBugs = 4, // Maximum number of bugs
     allEnemies = []; // Store enemies in an array
 
 // Enemies our player must avoid
@@ -20,7 +18,8 @@ var Enemy = function(x, y, speed) {
     this.sprite = 'images/enemy-bug.png';
     this.x = x;
     this.y = y;
-    this.speed = randomNum(200, 100);
+    // Enemies with random speed
+    this.speed = randomNum(180, 80);
 };
 
 // Update the enemy's position, required method for game
@@ -35,12 +34,13 @@ Enemy.prototype.update = function(dt) {
     if(this.x > 820) {
         this.x = 0;
 
-        // Random starting position after end of image [REPEATED CODE!!]
-        var randomRowNum = randomNum(3, 1);
+        // Random starting position after end of image
+        var randomRowNum = randomNum(4, 1);
         // Enemy position on rock tile
         if (randomRowNum === 1) this.y = 65;
         if (randomRowNum === 2) this.y = 65 + 83;
         if (randomRowNum === 3) this.y = 65 + 83 * 2;
+        if (randomRowNum === 4) this.y = 65 + 83 * 3;
     }
 
     // Enemy boundaries for detecing collision
@@ -55,10 +55,18 @@ Enemy.prototype.update = function(dt) {
        // Collision detection
        if(enemies.x < player.x + player.w && enemies.x + enemies.w > player.x &&
        enemies.y < player.y + player.h && enemies.y + enemies.h > player.y){
-       console.log("BANG!!!");
-       collide();
+        if(!gameOver) {
+            // If game is not game over then detect for enemy collision
+            console.log("BANG!!!");
+            collide();
+        }
        }
     }
+};
+
+// Draw the enemy on the screen, required method for game
+Enemy.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
 
@@ -66,7 +74,7 @@ Enemy.prototype.update = function(dt) {
 function initiateEnemy() {
     for(i = 0; i < maxNumBugs; i++) {
 
-    // Random starting position [REPEATED CODE!!]
+    // Random starting position
     var randomRowNum = randomNum(4, 1);
     // Enemy position on rock tile
     if (randomRowNum === 1) this.y = 65;
@@ -74,23 +82,20 @@ function initiateEnemy() {
     if (randomRowNum === 3) this.y = 65 + 83 * 2;
     if (randomRowNum === 4) this.y = 65 + 83 * 3;
 
-
+    // Create new enemies with random speed
     var enemy = new Enemy(-200, this.y, Enemy.speed);
+    // Place all enemy objects in an array called allEnemies
     allEnemies.push(enemy);
     }
 }
 
+// Now instantiate your objects.
 initiateEnemy();
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
+
 
 /*********** PLAYER ***********/
 // Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 
 // Player Variables
 var playerMoveX = 101,
@@ -104,12 +109,6 @@ var playerMoveX = 101,
     maxLife = 5;
 
 
-// Now instantiate your objects.
-/*function initiateEnemy() {
-var enemy1 = new Enemy(0, 50, 1);
-};
-*/
-// Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var Player = function(x, y) {
     this.sprite = 'images/char-boy.png';
@@ -138,7 +137,6 @@ Player.prototype.update = function() {
     // Reset if player on water
     if(this.y < 60) {
         collide();
-
     }
 
 };
@@ -154,9 +152,11 @@ Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Call player
+// Initiate Player Object
 var player = new Player(playerInitialPosX, playerInitialPosY);
 
+
+/*********** PLAYER LIFE ***********/
 
 // Players life before game over
 var Life = function() {
@@ -166,6 +166,7 @@ var Life = function() {
 
 };
 
+// Render life image
 Life.prototype.render = function() {
     var x = 0;
     for(var i = 0; i < this.life; i++){
@@ -173,19 +174,26 @@ Life.prototype.render = function() {
     x += 50;
 }
     if(this.life === 0) {
-        ctx.drawImage(Resources.get(this.gameover),254, 303);
+        gameOver = true;
+
     }
 };
 
+// Decrease life
 Life.prototype.update = function() {
     if(this.life > 0) {
         this.life -= 1;
     }
 };
 
+// Initiate player life
 var playerLife = new Life();
 
 
+
+
+/*********** GEM AND SCORE ***********/
+//Gem Variables
 var gemMaxNum = 5,
     allGems = [];
     gemWidth = 70;
@@ -193,7 +201,6 @@ var gemMaxNum = 5,
     gemPositionX = 115 + randomNum(7, 0) * blockWidth;
     gemPositionY = 101 + randomNum(4, 0) * blockHeight;
 
-/*********** SCORE ***********/
 var Gem = function() {
     this.sprite = 'images/Gem Blue.png';
     this.x = gemPositionX;
@@ -212,9 +219,7 @@ Gem.prototype.update = function() {
     player.score += 30;
     console.log(player.score + " Points!");
     $("#score").html('<p>Score: ' + player.score + '</p>');
-
     }
-
     }
 };
 
@@ -222,8 +227,29 @@ Gem.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y, 70, 110);
 };
 
+
+// Initiate Gems
 var gem = new Gem();
 
+
+/*********** GAME OVER ***********/
+
+var GameOver = function() {
+    this.sprite = 'images/game-over.png';
+};
+
+GameOver.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite),254, 303);
+};
+
+// Initiate game over
+var game = new GameOver();
+
+
+/*********** GLOBAL FUNCTIONS ***********/
+var gameOver = false;
+var gameStart = false;
+var timeLimit = 30;
 
 // Generate random numbers
 function randomNum(a, b) {
@@ -240,6 +266,34 @@ function collide() {
 
 }
 
+// Start game and timer
+function start() {
+    if (gameOver || !gameStart) {
+        gameStart = true;
+        countDown(timeLimit,"timer");
+    }
+}
+
+// Game timer
+function countDown(seconds, elem) {
+    var element = document.getElementById(elem);
+
+    if(gameStart){
+        element.innerHTML = "<p>Timer: " +seconds+ "</p>";
+        if (seconds < 1) {
+            clearTimeout(timer);
+            element.innerHTML = "TIMES UP!";
+            gameOver = true;
+            gameStart = false;
+        } else if(gameOver){
+            clearTimeout(timer);
+            element.innerHTML = "NO MORE LIVES!";
+        }
+
+        seconds --;
+        var timer = setTimeout('countDown('+seconds+', "'+elem+'")', 1000);
+    }
+}
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
