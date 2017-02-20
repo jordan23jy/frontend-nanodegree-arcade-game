@@ -5,7 +5,7 @@ frontend-nanodegree-arcade-game
 
 This is a simplified clone o the game frogger.
 
-Link to play the game >>> http://projects.jordanyong.com/frontend-nanodegree-arcade-game/
+Link to play the game >>> http://obrin.github.io/udacity-arcade-game/
 
 <h2>Instructions</h2>
 The goal of this game is to collect as many gems as possible within 30 seconds while avoiding the enemy bugs and avoiding the water.
